@@ -16,6 +16,7 @@ local showHiddenCheckbox
 local showOutfitsCheckbox
 local premiumBenefitsPanel
 local premiumButton
+local previewPanel
 local suppressCheckCallbacks = false
 
 local function setCheckedWithoutCallback(widget, checked)
@@ -71,6 +72,7 @@ local function resetUIReferences()
     showOutfitsCheckbox = nil
     premiumBenefitsPanel = nil
     premiumButton = nil
+    previewPanel = nil
 end
 
 local function toBoolean(value, default)
@@ -695,6 +697,7 @@ function CharacterList.create(characters, account, otui)
     showOutfitsCheckbox = charactersWindow:recursiveGetChildById('checkBoxOutfit')
     premiumBenefitsPanel = charactersWindow:getChildById('premiumBenefitsPanel')
     premiumButton = charactersWindow:getChildById('premiumButton')
+    previewPanel = charactersWindow:getChildById('characterPreviewPanel')
 
     characterList.onChildFocusChange = function(self, focusedChild, oldFocusedChild)
         removeAutoReconnectEvent()
@@ -703,6 +706,7 @@ function CharacterList.create(characters, account, otui)
             focusedChild:updateOnStates()
             self:ensureChildVisible(focusedChild)
         end
+        CharacterList.updateCharacterPreview(focusedChild)
     end
 
     -- characters
@@ -856,7 +860,53 @@ function CharacterList.rebuildCharactersList()
             characterList:ensureChildVisible(focusLabel)
         end)
     end
+    CharacterList.updateCharacterPreview(focusLabel)
     updateSortButtons()
+end
+
+function CharacterList.updateCharacterPreview(widget)
+    if not previewPanel or shouldShowAppearance() then
+        return
+    end
+
+    local nameLabel = previewPanel:getChildById('previewName')
+    local outfitBox = previewPanel:getChildById('previewOutfit')
+    local levelLabel = previewPanel:getChildById('previewLevel')
+    local vocationLabel = previewPanel:getChildById('previewVocation')
+
+    local characterInfo = widget and widget.characterInfo
+    if not characterInfo then
+        if nameLabel then nameLabel:setText('') end
+        if levelLabel then levelLabel:setText('') end
+        if vocationLabel then vocationLabel:setText('') end
+        if outfitBox then outfitBox:setVisible(false) end
+        return
+    end
+
+    if nameLabel then
+        nameLabel:setText(tostring(characterInfo.name or ''))
+    end
+
+    if levelLabel then
+        local level = characterInfo.level
+        levelLabel:setText(level ~= nil and tr('Level: %s', level) or '')
+    end
+
+    if vocationLabel then
+        vocationLabel:setText(tostring(characterInfo.vocation or ''))
+    end
+
+    if outfitBox then
+        outfitBox:setVisible(true)
+        outfitBox:setOutfit({
+            type = characterInfo.outfitid or 0,
+            head = characterInfo.headcolor or 0,
+            body = characterInfo.torsocolor or 0,
+            legs = characterInfo.legscolor or 0,
+            feet = characterInfo.detailcolor or 0,
+            addons = characterInfo.addonsflags or 0
+        })
+    end
 end
 
 function CharacterList.destroy()

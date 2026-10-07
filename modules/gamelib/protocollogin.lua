@@ -226,6 +226,16 @@ function ProtocolLogin:parseCharacterList(msg)
             character.worldIp = worlds[worldId].worldIp
             character.worldPort = worlds[worldId].worldPort
             character.previewState = worlds[worldId].previewState
+
+            character.outfitid = msg:getU16()
+            character.headcolor = msg:getU8()
+            character.torsocolor = msg:getU8()
+            character.legscolor = msg:getU8()
+            character.detailcolor = msg:getU8()
+            character.addonsflags = msg:getU8()
+            character.level = msg:getU32()
+            character.vocation = msg:getString()
+
             characters[i] = character
         end
 
@@ -241,6 +251,15 @@ function ProtocolLogin:parseCharacterList(msg)
             if g_game.getFeature(GamePreviewState) then
                 character.previewState = msg:getU8()
             end
+
+            character.outfitid = msg:getU16()
+            character.headcolor = msg:getU8()
+            character.torsocolor = msg:getU8()
+            character.legscolor = msg:getU8()
+            character.detailcolor = msg:getU8()
+            character.addonsflags = msg:getU8()
+            character.level = msg:getU32()
+            character.vocation = msg:getString()
 
             characters[i] = character
         end

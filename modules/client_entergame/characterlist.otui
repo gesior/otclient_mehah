@@ -177,6 +177,7 @@ CharacterWidget < UIWidget
       else
         self:addAnchor(AnchorRight, 'parent', AnchorRight)
         self:setMarginRight(5)
+        self:hide()
       end
 
     $on:
@@ -197,11 +198,11 @@ MainWindow
         self:setText(tr('Select Character'))
         self:setColor("#c0c0c0")
       else
-        self:setSize({width = 350, height = 400})
+        self:setSize({width = 520, height = 400})
         self:setText(tr('Character List'))
       end
     else
-      self:setSize({width = 250, height = 248})
+      self:setSize({width = 420, height = 270})
     end
 
   TextList
@@ -383,10 +384,74 @@ MainWindow
     id: characterListScrollBar
     anchors.top: parent.top
     anchors.bottom: accountStatusCaption.top
-    anchors.right: parent.right
+    anchors.right: characterPreviewPanel.left
     margin-bottom: 5
     step: 14
     pixels-scroll: true
+    @onSetup: |
+      if not(g_game.getFeature(GameEnterGameShowAppearance)) then
+        self:setMarginRight(6)
+      end
+
+  Panel
+    id: characterPreviewPanel
+    width: 160
+    anchors.top: parent.top
+    anchors.right: parent.right
+    anchors.bottom: accountStatusCaption.top
+    margin-bottom: 5
+    background-color: #404040
+    border-width-top: 1
+    border-color-top: black
+    border-width-left: 1
+    border-color-left: black
+    border-width-bottom: 1
+    border-color-bottom: #747474
+    border-width-right: 1
+    border-color-right: #747474
+    padding: 6
+    @onSetup: |
+      if g_game.getFeature(GameEnterGameShowAppearance) then
+        self:setWidth(0)
+        self:setMarginLeft(0)
+        self:hide()
+      end
+
+    Label
+      id: previewName
+      anchors.top: parent.top
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 4
+      font: verdana-11px-monochrome
+      color: #ffffff
+      text-auto-resize: true
+
+    UICreature
+      id: previewOutfit
+      size: 64 64
+      anchors.top: prev.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 8
+      fixed-creature-size: true
+      outfit-direction: 2
+
+    Label
+      id: previewLevel
+      anchors.top: prev.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 8
+      font: verdana-11px-monochrome
+      color: #bbbbbb
+      text-auto-resize: true
+
+    Label
+      id: previewVocation
+      anchors.top: prev.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 4
+      font: verdana-11px-monochrome
+      color: #bbbbbb
+      text-auto-resize: true
 
   VerticalSeparator
     anchors.left: parent.left
